@@ -1,1 +1,292 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
 
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Campus Vibes | 夏日校園</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700&family=Pacifico&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            /* 夏威夷配色 */
+            --bg-gradient: linear-gradient(120deg, #84fab0 0%, #8fd3f4 100%);
+            --card-bg: rgba(255, 255, 255, 0.85);
+            --primary: #ff6b6b; /* 扶桑花紅 */
+            --secondary: #feca57; /* 陽光黃 */
+            --text-main: #2d3436;
+            --text-muted: #636e72;
+            --shadow: 0 10px 30px rgba(0,0,0,0.1);
+            --radius: 25px;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            background: var(--bg-gradient);
+            color: var(--text-main);
+            font-family: 'Nunito', 'BiauKai', sans-serif;
+            min-height: 100vh;
+            overflow-x: hidden;
+            background-attachment: fixed;
+        }
+
+        /* === 導覽列 === */
+        .navbar {
+            padding: 15px 50px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            transition: 0.3s;
+            background: rgba(255, 255, 255, 0.3);
+            backdrop-filter: blur(10px);
+        }
+
+        .navbar.scrolled {
+            background: rgba(255, 255, 255, 0.95);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+
+        .logo {
+            font-family: 'Pacifico', cursive;
+            font-size: 28px;
+            color: var(--primary);
+            text-shadow: 2px 2px 0 #fff;
+            cursor: pointer;
+        }
+
+        .nav-links { display: flex; gap: 30px; }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--text-main);
+            font-weight: 700;
+            font-size: 1.1rem;
+            transition: 0.3s;
+            position: relative;
+        }
+
+        .nav-links a:hover { color: var(--primary); transform: translateY(-2px); }
+
+        /* 右上角功能區 (只保留漢堡選單，視覺更簡潔) */
+        .nav-actions { display: flex; align-items: center; gap: 15px; }
+
+        .hamburger { display: none; cursor: pointer; color: var(--text-main); font-size: 1.5rem; }
+
+        /* === Hero Section === */
+        .hero {
+            min-height: 60vh; /* 稍微縮短高度，讓卡片更快出現 */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 80px 20px;
+        }
+
+        .hero h1 {
+            font-family: 'Pacifico', cursive;
+            font-size: 5rem;
+            color: #fff;
+            margin-bottom: 20px;
+            text-shadow: 3px 3px 0 rgba(0,0,0,0.1);
+            animation: float 6s ease-in-out infinite;
+        }
+
+        .hero p {
+            font-size: 1.4rem;
+            color: #fff;
+            max-width: 700px;
+            line-height: 1.6;
+            font-weight: 700;
+            text-shadow: 1px 1px 5px rgba(0,0,0,0.1);
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-15px) rotate(1deg); }
+        }
+
+        /* === 卡片區域 === */
+        .features { 
+            max-width: 900px; /* 縮小寬度讓兩張卡片更集中 */
+            margin: -50px auto 100px; 
+            padding: 0 20px; 
+            position: relative; 
+            z-index: 2; 
+        }
+
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 40px;
+            justify-content: center;
+        }
+
+        .tech-card {
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            padding: 50px 30px; /* 增加內距讓卡片看起來更大器 */
+            box-shadow: var(--shadow);
+            transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border: 2px solid white;
+            display: flex; flex-direction: column;
+            text-align: center;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .tech-card::before {
+            content: '';
+            position: absolute; top: 0; left: 0; width: 100%; height: 8px;
+            background: linear-gradient(90deg, var(--secondary), var(--primary));
+        }
+
+        .tech-card:hover { transform: translateY(-15px); box-shadow: 0 15px 35px rgba(0,0,0,0.15); }
+
+        .card-icon {
+            width: 80px; height: 80px;
+            background: #fff;
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 36px;
+            color: var(--secondary);
+            margin-bottom: 25px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            transition: 0.4s;
+        }
+
+        .tech-card:hover .card-icon { background: var(--secondary); color: white; transform: rotate(15deg); }
+        .tech-card h3 { font-size: 1.8rem; margin-bottom: 15px; color: var(--text-main); }
+        .tech-card p { color: var(--text-muted); line-height: 1.6; margin-bottom: 30px; font-size: 1.1rem; }
+
+        .card-link {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 1.1rem;
+            transition: 0.3s;
+        }
+        .card-link:hover { gap: 10px; color: #ff4757; }
+
+        /* === 頁尾 === */
+        .footer {
+            background: #fff;
+            padding: 40px 20px;
+            text-align: center;
+            border-top-left-radius: 50px;
+            border-top-right-radius: 50px;
+        }
+        .copyright { margin-top: 15px; color: #b2bec3; font-size: 0.9rem; }
+
+        /* === RWD === */
+        @media (max-width: 768px) {
+            .navbar { padding: 15px 20px; }
+            .nav-links {
+                position: fixed; top: 70px; left: 0; width: 100%;
+                background: white; flex-direction: column; padding: 30px;
+                box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+                clip-path: circle(0% at 100% 0);
+                transition: 0.5s ease-in-out;
+                gap: 25px; text-align: center;
+            }
+            .nav-links.active { clip-path: circle(150% at 100% 0); }
+            .hamburger { display: block; }
+            .hero h1 { font-size: 3.5rem; }
+            .features { margin-top: -30px; }
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="navbar">
+        <div class="logo"><i class="fas fa-sun" style="color:var(--secondary); margin-right:5px;"></i> CampusVibes</div>
+        
+        <div class="nav-links">
+            <a href="美食.html">美食探索</a>
+            <a href="旅遊.html">輕旅行</a>
+        </div>
+
+        <div class="nav-actions">
+            <div class="hamburger">
+                <i class="fas fa-bars"></i>
+            </div>
+        </div>
+    </nav>
+
+    <header class="hero">
+        <h1>Aloha, Student!</h1>
+        <p>
+            陽光、微風、好心情。<br>
+            享受你的校園生活，像在度假一樣輕鬆探索。
+        </p>
+    </header>
+
+    <section class="features">
+        <div class="cards-grid">
+            <div class="tech-card">
+                <div class="card-icon"><i class="fas fa-utensils"></i></div>
+                <h3>島嶼美食</h3>
+                <p>搜羅校園周邊與熱門餐廳評價，不管是小吃還是大餐，絕不踩雷。</p>
+                <a href="美食.html" class="card-link">尋找美味 <i class="fas fa-chevron-right"></i></a>
+            </div>
+
+            <div class="tech-card">
+                <div class="card-icon"><i class="fas fa-plane-departure"></i></div>
+                <h3>週末出走</h3>
+                <p>整合旅遊板熱門行程，規劃你的下一次小旅行，為生活充電。</p>
+                <a href="旅遊.html" class="card-link">規劃行程 <i class="fas fa-chevron-right"></i></a>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="logo" style="font-size: 24px;">CampusVibes</div>
+        <div class="copyright">
+            &copy; 2025 CampusVibes. All Rights Reserved.
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            // 導覽列滾動特效
+            window.addEventListener('scroll', () => {
+                document.querySelector('.navbar').classList.toggle('scrolled', window.scrollY > 50);
+            });
+
+            // 手機版選單切換
+            const hamburger = document.querySelector('.hamburger');
+            const navLinks = document.querySelector('.nav-links');
+
+            hamburger.addEventListener('click', () => {
+                navLinks.classList.toggle('active');
+                const icon = hamburger.querySelector('i');
+                icon.classList.toggle('fa-bars');
+                icon.classList.toggle('fa-times');
+            });
+
+            // 卡片懸浮視差效果
+            const cards = document.querySelectorAll('.tech-card');
+            cards.forEach(card => {
+                card.addEventListener('mousemove', (e) => {
+                    const rect = card.getBoundingClientRect();
+                    const x = (e.clientX - rect.left) / rect.width - 0.5;
+                    const y = (e.clientY - rect.top) / rect.height - 0.5;
+                    card.style.transform = `perspective(1000px) rotateY(${x * 5}deg) rotateX(${y * -5}deg) translateY(-10px)`;
+                });
+                card.addEventListener('mouseleave', () => {
+                    card.style.transform = 'none';
+                });
+            });
+        });
+    </script>
+</body>
+</html>
