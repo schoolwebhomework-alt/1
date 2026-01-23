@@ -1,0 +1,834 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aloha Travel - 探索世界</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Microsoft JhengHei', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #e8f5e9, #c8e6c9, #ffffff);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+            color: #2e7d32;
+            min-height: 100vh;
+            padding-bottom: 40px;
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50% }
+            50% { background-position: 100% 50% }
+            100% { background-position: 0% 50% }
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: auto;
+            position: relative;
+            padding: 24px;
+        }
+
+        .home-btn {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(76, 175, 80, 0.8);
+            border: none;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 50px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            z-index: 100;
+            text-decoration: none;
+        }
+
+        .home-btn:hover {
+            background: rgba(56, 142, 60, 0.9);
+            transform: translateX(-5px);
+        }
+
+        header {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(76, 175, 80, 0.2);
+            padding: 16px 0;
+            margin-bottom: 30px;
+        }
+
+        .header-inner {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: #2e7d32;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .nav-links a {
+            color: #388e3c;
+            text-decoration: none;
+            margin-left: 24px;
+            font-weight: 500;
+            transition: 0.3s;
+        }
+
+        .nav-links a:hover,
+        .nav-links a.active {
+            color: #1b5e20;
+        }
+
+        .btn-cta {
+            background: rgba(76, 175, 80, 0.9);
+            color: white;
+            padding: 10px 24px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: 0.3s;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-cta:hover {
+            background: rgba(56, 142, 60, 1);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(76, 175, 80, 0.3);
+        }
+
+        .hero {
+            text-align: center;
+            padding: 80px 0 60px;
+            background: url('https://images.unsplash.com/photo-1544551763-46a013bb70d5?ixlib=rb-4.0.3&auto=format&fit=crop&w=1600&q=80') center/cover;
+            border-radius: 20px;
+            margin-bottom: 40px;
+            position: relative;
+            color: white;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: rgba(46, 125, 50, 0.7);
+            border-radius: 20px;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero h1 {
+            font-size: 3rem;
+            margin-bottom: 16px;
+            letter-spacing: -1px;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .hero p {
+            font-size: 1.3rem;
+            opacity: 0.9;
+            max-width: 800px;
+            margin: 0 auto;
+            line-height: 1.7;
+            font-weight: 300;
+        }
+
+        .search-wrap {
+            max-width: 500px;
+            margin: 30px auto 0;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 8px;
+            border-radius: 50px;
+            display: flex;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(76, 175, 80, 0.3);
+        }
+
+        .search-input {
+            border: none;
+            flex: 1;
+            padding: 0 20px;
+            outline: none;
+            font-size: 1rem;
+            background: transparent;
+            color: #2e7d32;
+        }
+
+        .search-input::placeholder {
+            color: rgba(46, 125, 50, 0.7);
+        }
+
+        .search-btn {
+            background: rgba(76, 175, 80, 0.9);
+            border: none;
+            color: white;
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .search-btn:hover {
+            transform: scale(1.05);
+            background: rgba(56, 142, 60, 1);
+        }
+
+        .stats {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            margin: -30px auto 40px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            padding: 20px 40px;
+            border-radius: 20px;
+            text-align: center;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(76, 175, 80, 0.2);
+            width: 160px;
+            transition: transform 0.3s ease;
+            color: #2e7d32;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .stat-num {
+            font-size: 2rem;
+            font-weight: 800;
+            color: #388e3c;
+            display: block;
+            line-height: 1;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: #66bb6a;
+        }
+
+        .grid-layout {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(76, 175, 80, 0.2);
+            transition: transform 0.3s ease;
+            margin-bottom: 30px;
+            color: #2e7d32;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+        }
+
+        .card-header {
+            padding: 0 0 20px 0;
+            border-bottom: 1px solid rgba(76, 175, 80, 0.2);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .card-title {
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: #388e3c;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .badge {
+            background: rgba(76, 175, 80, 0.2);
+            color: #2e7d32;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            border: 1px solid rgba(76, 175, 80, 0.3);
+        }
+
+        .list-wrap {
+            max-height: 450px;
+            overflow-y: auto;
+            padding: 0 10px;
+        }
+
+        .list-wrap::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .list-wrap::-webkit-scrollbar-track {
+            background: rgba(76, 175, 80, 0.1);
+            border-radius: 10px;
+        }
+
+        .list-wrap::-webkit-scrollbar-thumb {
+            background: rgba(76, 175, 80, 0.5);
+            border-radius: 10px;
+        }
+
+        .list-item {
+            padding: 20px;
+            border-bottom: 1px solid rgba(76, 175, 80, 0.1);
+            cursor: pointer;
+            transition: 0.2s;
+            border-radius: 12px;
+            margin-bottom: 10px;
+        }
+
+        .list-item:last-child {
+            border: none;
+            margin-bottom: 0;
+        }
+
+        .list-item:hover {
+            background: rgba(76, 175, 80, 0.07);
+        }
+
+        .item-title {
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #1b5e20;
+            font-size: 1.2rem;
+        }
+
+        .item-meta {
+            font-size: 0.85rem;
+            color: #4caf50;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 8px;
+        }
+
+        .item-meta i {
+            color: #388e3c;
+            margin-right: 4px;
+        }
+
+        .item-desc {
+            font-size: 0.9rem;
+            color: #558b2f;
+            line-height: 1.5;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            padding: 15px 0 20px 0;
+            overflow-x: auto;
+        }
+
+        .tab {
+            padding: 8px 16px;
+            border-radius: 20px;
+            background: rgba(76, 175, 80, 0.1);
+            font-size: 0.9rem;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: 0.2s;
+            color: #388e3c;
+            border: 1px solid rgba(76, 175, 80, 0.2);
+        }
+
+        .tab.active {
+            background: rgba(76, 175, 80, 0.3);
+            color: #1b5e20;
+            border-color: rgba(76, 175, 80, 0.5);
+        }
+
+        .rank-item {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            margin-bottom: 12px;
+            background: rgba(76, 175, 80, 0.1);
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .rank-item:hover {
+            background: rgba(76, 175, 80, 0.2);
+            transform: scale(1.02);
+        }
+
+        .rank-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .rank-num {
+            font-weight: 800;
+            width: 40px;
+            text-align: center;
+            font-size: 1.5rem;
+            color: #388e3c;
+        }
+
+        .rank-1 { color: #2e7d32; }
+        .rank-2 { color: #81c784; }
+        .rank-3 { color: #a5d6a7; }
+
+        .word-cloud {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            padding: 20px;
+            justify-content: center;
+            align-items: center;
+            min-height: 200px;
+            background: rgba(76, 175, 80, 0.1);
+            border-radius: 12px;
+        }
+
+        .cloud-word {
+            padding: 8px 16px;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 12px;
+            font-size: 0.85rem;
+            color: #2e7d32;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: 1px solid rgba(76, 175, 80, 0.3);
+        }
+
+        .cloud-word:hover {
+            transform: scale(1.1) translateY(-3px);
+            box-shadow: 0 5px 15px rgba(76, 175, 80, 0.3);
+            background: rgba(76, 175, 80, 0.3) !important;
+            color: #1b5e20 !important;
+        }
+
+        footer {
+            text-align: center;
+            padding: 30px 0;
+            margin-top: 20px;
+            border-top: 1px solid rgba(76, 175, 80, 0.3);
+            font-size: 0.9rem;
+            opacity: 0.8;
+            color: #388e3c;
+        }
+
+        @media (max-width: 768px) {
+            .grid-layout { grid-template-columns: 1fr; }
+            .hero h1 { font-size: 2.2rem; }
+            .stats { flex-direction: column; gap: 15px; align-items: center; }
+            .stat-card { width: 100%; max-width: 300px; }
+            .nav-links { display: none; }
+            .home-btn { top: 10px; left: 10px; padding: 8px 12px; font-size: 0.9rem; }
+        }
+
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .fade-in { animation: fadeIn 0.5s ease-in; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="container header-inner">
+            <a href="旅遊.html" class="logo"><i class="fas fa-paper-plane"></i>  Travel</a>
+            <a href="index.html" class="btn-cta">首頁</a>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="hero">
+            <div class="hero-content">
+                <h1>讓世界成為你的遊樂場</h1>
+                <p>尋找完美旅伴，分享獨家攻略，即刻出發</p>
+                <div class="search-wrap">
+                    <input type="text" class="search-input" placeholder="搜尋目的地、風格或旅伴...">
+                    <button class="search-btn"><i class="fas fa-search"></i></button>
+                </div>
+            </div>
+        </div>
+    
+        <div class="grid-layout">
+            <div class="main-col">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title"><i class="fas fa-map-marked-alt"></i> 最新旅遊攻略</div>
+                        <span class="badge" id="badgeGuide">載入中</span>
+                    </div>
+                    <div class="list-wrap" id="guideList"></div>
+                </div>
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title"><i class="fas fa-user-friends"></i> 尋找旅行夥伴</div>
+                        <span class="badge" id="badgeCompanion">載入中</span>
+                    </div>
+                    <div class="tabs" id="regionTabs">
+                        <div class="tab active" data-region="all">全部</div>
+                        <div class="tab" data-region="asia">亞洲</div>
+                        <div class="tab" data-region="europe">歐洲</div>
+                        <div class="tab" data-region="america">美洲</div>
+                        <div class="tab" data-region="oceania">大洋洲</div>
+                        <div class="tab" data-region="africa">非洲</div>
+                    </div>
+                    <div class="list-wrap" id="companionList"></div>
+                </div>
+            </div>
+            <div class="side-col">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title"><i class="fas fa-trophy"></i> 熱門目的地</div>
+                    </div>
+                    <div style="padding: 0 24px 20px;" id="rankingList"></div>
+                </div>
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title"><i class="fas fa-hashtag"></i> 熱搜標籤</div>
+                    </div>
+                    <div class="word-cloud" id="wordCloud"></div>
+                </div>
+            </div>
+        </div>
+    </div> <script src="./js/data.js"></script>
+    <script src="./js/d.js"></script>
+    <script src="./js/7.js"></script>
+    <script src="./js/8.js"></script>
+
+    <script>
+        class App {
+            constructor() {
+                this.guideData = [];
+                this.companionData = [];
+                this.wordCloudData = [];
+                this.topLocations = [];
+
+                this.init();
+            }
+
+            init() {
+                // 等待所有 JS 檔案載入完成
+                setTimeout(() => {
+                    this.prepareData();
+                    this.renderGuides();
+                    this.renderCompanions('all');
+                    this.renderRanking();
+                    this.renderWordCloud();
+                    this.updateStats();
+                    this.setupTabs();
+                    this.setupSearch();
+                }, 100);
+            }
+            
+            prepareData() {
+                console.log('檢查 JS 檔案數據...');
+
+                // 攻略資料：d.js 變數名為 realContentData
+                if (typeof realContentData !== 'undefined') {
+                    this.guideData = realContentData;
+                    console.log(`載入 guideData (realContentData)，共 ${this.guideData.length} 筆`);
+                } else {
+                    console.warn("未找到 d.js 變數 realContentData");
+                }
+
+                // 旅伴資料：7.js 變數名為 discussionData
+                if (typeof discussionData !== 'undefined') {
+                    this.companionData = discussionData;
+                    console.log(`載入 companionData (discussionData)，共 ${this.companionData.length} 筆`);
+                } else {
+                    console.warn("未找到 7.js 變數 discussionData");
+                }
+
+                // 熱門地點：data.js 變數名為 topLocations
+                if (typeof topLocations !== 'undefined') {
+                    this.topLocations = topLocations;
+                    console.log(`載入 topLocations，共 ${this.topLocations.length} 筆`);
+                } else {
+                    console.warn("未找到 data.js 變數 topLocations");
+                }
+
+                // 文字雲資料：data.js 變數名為 hotKeywords
+                if (typeof hotKeywords !== 'undefined') {
+                    this.wordCloudData = hotKeywords;
+                    console.log(`載入 hotKeywords，共 ${this.wordCloudData.length} 筆`);
+                } else {
+                    console.warn("未找到 data.js 變數 hotKeywords");
+                    // 如果沒有 hotKeywords，使用 topLocations 作為備用
+                    this.wordCloudData = this.topLocations;
+                }
+
+                console.log(`數據載入完成：攻略 ${this.guideData?.length || 0} 筆，旅伴 ${this.companionData?.length || 0} 筆，排行榜 ${this.topLocations?.length || 0} 筆，文字雲 ${this.wordCloudData?.length || 0} 筆`);
+            }
+
+            renderGuides() {
+                const container = document.getElementById('guideList');
+                if (!this.guideData.length) {
+                    container.innerHTML = '<div style="padding:20px; text-align:center; color:#81c784;">無旅遊攻略數據</div>';
+                    return;
+                }
+
+                container.innerHTML = this.guideData.slice(0, 10).map(item => `
+                    <div class="list-item" onclick="alert('跳轉至文章 ID: ${item.id || ''}')">
+                        <div class="item-title">${item.title || '無標題'}</div>
+                        <div class="item-meta">
+                            <span><i class="fas fa-user"></i> ${item.author || '匿名'}</span>
+                            <span><i class="fas fa-map-marker-alt"></i> ${item.company || item.position || item.location || '未知地點'}</span>
+                            <span><i class="far fa-calendar"></i> ${item.posted || item.date || '近期'}</span>
+                            <span><i class="fas fa-heart"></i> ${item.likes || 0}</span>
+                        </div>
+                        <div class="item-desc">${item.preview || item.desc || '無內容描述...'}</div>
+                        <div style="margin-top:8px; font-size:0.8rem;">
+                            ${(item.tags || []).map(tag => `<span style="background:#e8f5e9; padding:2px 8px; border-radius:12px; margin-right:5px; color:#2e7d32;">#${tag}</span>`).join('')}
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            renderCompanions(filterRegion) {
+                const container = document.getElementById('companionList');
+                if (!this.companionData.length) {
+                    container.innerHTML = '<div style="padding:20px; text-align:center; color:#81c784;">無旅伴數據</div>';
+                    return;
+                }
+
+                const data = filterRegion === 'all' ? this.companionData : this.companionData.filter(c => c.region === filterRegion);
+                container.innerHTML = data.length ? data.slice(0, 10).map(item => `
+                    <div class="list-item" onclick="alert('查看旅伴需求: ${item.title || ''}')">
+                        <div class="item-title">${item.title || '無標題'}</div>
+                        <div class="item-meta">
+                            <span><i class="far fa-calendar"></i> ${item.posted || item.date || '未知日期'}</span>
+                            <span><i class="fas fa-users"></i> ${item.needed ? '缺' + item.needed : '人數不限'}</span>
+                            <span><i class="fas fa-venus-mars"></i> ${item.gender || '不拘'}</span>
+                            <span><i class="fas fa-child"></i> ${item.ageRange || '不限年齡'}</span>
+                        </div>
+                        <div style="font-size:0.85rem; color:#66bb6a; margin-top:5px;">
+                            <span style="background:#e8f5e9; padding:2px 10px; border-radius:12px; margin-right:8px;">${item.duration || '天數未定'}</span>
+                            <span style="background:#c8e6c9; padding:2px 10px; border-radius:12px; color:#2e7d32">${item.status || '徵集中'}</span>
+                        </div>
+                    </div>
+                `).join('') : '<div style="padding:20px; text-align:center; color:#81c784;">此區域暫無資料</div>';
+            }
+
+            renderRanking() {
+                const container = document.getElementById('rankingList');
+                
+                // 使用 data.js 中的 topLocations 資料
+                if (!this.topLocations || !this.topLocations.length) {
+                    container.innerHTML = '<div style="padding:20px; text-align:center; color:#81c784;">無排行數據</div>';
+                    return;
+                }
+
+                // 顯示前10個
+                const rankingData = this.topLocations.slice(0, 10);
+
+                container.innerHTML = rankingData.map((item, i) => {
+                    // 確保資料格式正確
+                    const name = item.name || item.text || item.destination || '未知地點';
+                    const count = item.count || item.size || 0;
+                    const region = item.region || '亞洲';
+                    
+                    return `
+                    <div class="rank-item">
+                        <div class="rank-num">${i + 1}</div>
+                        <div style="flex:1; font-weight:500;">
+                            ${name} <span style="font-size:0.7rem; color:#81c784; margin-left:5px;">(${region})</span>
+                        </div>
+                        <div style="color:#a5d6a7; font-size:0.8rem; display:flex; align-items:center;">
+                            <i class="fas fa-search" style="margin-right:4px;"></i> ${count} ${i < 3 ? '<i class="fas fa-fire" style="color:#ff7043; margin-left:5px;"></i>' : ''}
+                        </div>
+                    </div>`;
+                }).join('');
+            }
+
+            renderWordCloud() {
+                const container = document.getElementById('wordCloud');
+                
+                if (!this.wordCloudData || !this.wordCloudData.length) {
+                    container.innerHTML = '<div style="padding:20px; text-align:center; color:#81c784;">無標籤數據</div>';
+                    return;
+                }
+
+                // 處理資料格式，確保有 text 屬性
+                const processedData = this.wordCloudData.map(item => {
+                    if (typeof item === 'string') {
+                        return {
+                            text: item,
+                            size: Math.floor(Math.random() * 10) + 14,
+                            color: this.getRandomColor(),
+                            count: 1
+                        };
+                    } else if (item && typeof item === 'object') {
+                        return {
+                            text: item.text || item.name || item.word || item.keyword || String(item),
+                            size: item.size || item.count || 16,
+                            color: item.color || this.getRandomColor(),
+                            count: item.count || 1
+                        };
+                    }
+                    return { text: String(item), size: 16, color: this.getRandomColor(), count: 1 };
+                });
+
+                // 隨機排序
+                const shuffled = [...processedData].sort(() => Math.random() - 0.5);
+
+                // 生成文字雲
+                container.innerHTML = shuffled.map(word => {
+                    const fontSize = Math.max(12, word.size || 16);
+                    const fontWeight = fontSize > 20 ? '700' : (fontSize > 16 ? '600' : '500');
+                    const color = word.color || this.getRandomColor();
+                    const text = word.text || String(word);
+                    
+                    return `
+                        <span class="cloud-word" 
+                            style="font-size: ${fontSize}px; color: ${color}; font-weight: ${fontWeight};"
+                            data-word="${text}"
+                            title="${text} (出現次數: ${word.count || 1})">
+                            ${text}
+                        </span>
+                    `;
+                }).join('');
+
+                // 添加點擊事件
+                container.querySelectorAll('.cloud-word').forEach(word => {
+                    word.addEventListener('click', () => {
+                        const term = word.dataset.word;
+                        document.querySelector('.search-input').value = term;
+                        this.performSearch(term);
+                    });
+                });
+            }
+
+            getRandomColor() {
+                const colors = ["#2e7d32", "#388e3c", "#43a047", "#4caf50", "#66bb6a", "#81c784", "#a5d6a7", "#c8e6c9", "#1b5e20", "#558b2f"];
+                return colors[Math.floor(Math.random() * colors.length)];
+            }
+
+            updateStats() {
+                // 檢查元素是否存在再更新
+                const elGuide = document.getElementById('statGuide');
+                const elCompanion = document.getElementById('statCompanion');
+                const elBadgeGuide = document.getElementById('badgeGuide');
+                const elBadgeCompanion = document.getElementById('badgeCompanion');
+
+                if(elGuide) elGuide.textContent = this.guideData.length;
+                if(elCompanion) elCompanion.textContent = this.companionData.length;
+                if(elBadgeGuide) elBadgeGuide.textContent = `${this.guideData.length} 篇`;
+                if(elBadgeCompanion) elBadgeCompanion.textContent = `${this.companionData.length} 則`;
+            }
+
+            setupTabs() {
+                document.querySelectorAll('#regionTabs .tab').forEach(tab => {
+                    tab.addEventListener('click', () => {
+                        document.querySelectorAll('#regionTabs .tab').forEach(t => t.classList.remove('active'));
+                        tab.classList.add('active');
+                        this.renderCompanions(tab.dataset.region);
+                    });
+                });
+            }
+
+            setupSearch() {
+                const searchBtn = document.querySelector('.search-btn');
+                const searchInput = document.querySelector('.search-input');
+                const runSearch = () => this.performSearch(searchInput.value.trim());
+                searchBtn.addEventListener('click', runSearch);
+                searchInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') runSearch(); });
+            }
+
+            performSearch(term) {
+                if (!term) {
+                    this.renderGuides();
+                    this.renderCompanions('all');
+                    return;
+                }
+                const lowerTerm = term.toLowerCase();
+
+                const filteredGuides = this.guideData.filter(item =>
+                    (item.title && item.title.toLowerCase().includes(lowerTerm)) ||
+                    (item.company && item.company.toLowerCase().includes(lowerTerm)) ||
+                    (item.position && item.position.toLowerCase().includes(lowerTerm)) ||
+                    (item.location && item.location.toLowerCase().includes(lowerTerm)) ||
+                    (item.tags && item.tags.some(t => t.toLowerCase().includes(lowerTerm))) ||
+                    (item.preview && item.preview.toLowerCase().includes(lowerTerm)) ||
+                    (item.desc && item.desc.toLowerCase().includes(lowerTerm))
+                );
+
+                const filteredCompanions = this.companionData.filter(item =>
+                    (item.title && item.title.toLowerCase().includes(lowerTerm)) ||
+                    (item.destination && item.destination.toLowerCase().includes(lowerTerm))
+                );
+
+                document.getElementById('guideList').innerHTML = filteredGuides.length ? filteredGuides.map(item => `
+                    <div class="list-item">
+                        <div class="item-title">${item.title || '無標題'}</div>
+                        <div class="item-meta">
+                            <span><i class="fas fa-user"></i> ${item.author || '匿名'}</span>
+                            <span><i class="fas fa-map-marker-alt"></i> ${item.company || item.position || item.location || '未知地點'}</span>
+                            <span style="color:#ff7043">搜尋結果</span>
+                        </div>
+                    </div>`).join('') : '<div style="padding:20px; text-align:center; color:#81c784;">未找到相關攻略</div>';
+
+                document.getElementById('companionList').innerHTML = filteredCompanions.length ? filteredCompanions.map(item => `
+                    <div class="list-item">
+                        <div class="item-title">${item.title || '無標題'}</div>
+                        <div class="item-meta">
+                            <span><i class="fas fa-users"></i> ${item.needed ? '缺' + item.needed : '人數不限'}</span>
+                            <span style="color:#ff7043">搜尋結果</span>
+                        </div>
+                    </div>`).join('') : '<div style="padding:20px; text-align:center; color:#81c784;">未找到相關旅伴</div>';
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => new App());
+    </script>
+</body>
+</html>
