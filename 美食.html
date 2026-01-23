@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>討論區數據分析 | 熱門話題統計</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/wordcloud@1.1.0/src/wordcloud2.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- 引入外部數據文件 -->
+    <script src="./js/food_trends.js"></script>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Microsoft JhengHei', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #f8fff8 0%, #e8f7e8 50%, #d6efd6 100%);
+            color: #2d5015;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            position: relative;
+        }
+
+        .home-btn {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(76, 175, 80, 0.8);
+            color: white;
+            padding: 10px 15px;
+            border-radius: 50px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+        }
+
+        .home-btn:hover {
+            background: rgba(56, 142, 60, 0.9);
+        }
+
+        header {
+            text-align: center;
+            padding: 30px 0;
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            font-size: 3rem;
+            margin-bottom: 10px;
+            background: linear-gradient(90deg, #2e7d32, #4caf50);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .subtitle {
+            font-size: 1.3rem;
+            max-width: 800px;
+            margin: 25px auto 0;
+            line-height: 1.7;
+            color: #4a7c59;
+        }
+
+        .panel {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(76, 175, 80, 0.2);
+            flex: 1;
+            min-width: 300px;
+        }
+
+        .panel h2 {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+            font-size: 1.8rem;
+            color: #2e7d32;
+        }
+
+        .panel h3 {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+            font-size: 1.4rem;
+            color: #4caf50;
+        }
+
+        .ranking-list {
+            list-style: none;
+        }
+
+        .ranking-item {
+            display: flex;
+            align-items: flex-start;
+            padding: 15px;
+            margin-bottom: 12px;
+            background: rgba(232, 247, 232, 0.7);
+            border-radius: 10px;
+            cursor: pointer;
+            border: 1px solid rgba(76, 175, 80, 0.2);
+        }
+
+        .rank {
+            font-size: 1.5rem;
+            font-weight: bold;
+            width: 40px;
+            text-align: center;
+            color: #4a7c59;
+        }
+
+        .rank-1 { color: #2e7d32; }
+        .rank-2 { color: #4caf50; }
+        .rank-3 { color: #81c784; }
+        
+        .item-info {
+            flex: 1;
+            padding: 0 15px;
+        }
+
+        .item-name {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: #2e7d32;
+        }
+
+        .item-tags {
+            margin-top: 8px;
+        }
+
+        .tag {
+            display: inline-block;
+            padding: 3px 8px;
+            background: rgba(76, 175, 80, 0.15);
+            border-radius: 4px;
+            margin-right: 5px;
+            margin-bottom: 5px;
+            font-size: 0.8rem;
+            color: #2e7d32;
+        }
+
+        .item-details {
+            display: none;
+            margin-top: 10px;
+            padding: 10px;
+            background: rgba(232, 247, 232, 0.9);
+            border-radius: 8px;
+            font-size: 0.9rem;
+            line-height: 1.6;
+            color: #4a7c59;
+        }
+
+        .ranking-item.active .item-details {
+            display: block;
+        }
+
+        .wordcloud-container {
+            height: 350px;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 20px;
+        }
+
+        #wordcloud {
+            width: 100%;
+            height: 100%;
+        }
+
+        .chart-container {
+            height: 250px;
+            margin-top: 20px;
+        }
+
+        .data-source {
+            text-align: center;
+            padding: 20px;
+            font-size: 0.9rem;
+            color: #4a7c59;
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 25px;
+            background: rgba(255, 255, 255, 0.95);
+            color: #2e7d32;
+            border-radius: 8px;
+            transform: translateX(200%);
+            transition: transform 0.3s ease;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(248, 255, 248, 0.95);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            flex-direction: column;
+            gap: 20px;
+            color: #2e7d32;
+        }
+        
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid rgba(76, 175, 80, 0.3);
+            border-radius: 50%;
+            border-top-color: #4caf50;
+            animation: spin 1s ease-in-out infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .item-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 36px;
+            height: 36px;
+            background: rgba(76, 175, 80, 0.15);
+            color: #2e7d32;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .tab {
+            padding: 10px 20px;
+            background: rgba(232, 247, 232, 0.7);
+            border-radius: 50px;
+            cursor: pointer;
+            color: #2e7d32;
+            border: 1px solid rgba(76, 175, 80, 0.2);
+        }
+
+        .tab.active {
+            background: rgba(76, 175, 80, 0.2);
+            color: #1b5e20;
+        }
+
+        .tab:hover {
+            background: rgba(76, 175, 80, 0.15);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .ranking-section {
+            display: flex;
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .ranking-panel {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(76, 175, 80, 0.3);
+        }
+
+        .ranking-panel h2 {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+            font-size: 1.8rem;
+            color: #2e7d32;
+        }
+
+        .popular-ranking {
+            border: 2px solid rgba(76, 175, 80, 0.4);
+        }
+        
+        .combined-panel {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+        
+        .combined-panel h2 {
+            margin-bottom: 20px;
+        }
+        
+        .visualization-container {
+            display: flex;
+            flex-direction: column;
+            height: calc(100% - 70px);
+        }
+        
+        .top-section {
+            flex: 1;
+            min-height: 250px;
+        }
+        
+        .bottom-section {
+            flex: 1.2;
+            min-height: 350px;
+        }
+        
+        .section-divider {
+            height: 1px;
+            background: linear-gradient(90deg, 
+                transparent 0%, 
+                rgba(76, 175, 80, 0.3) 30%, 
+                rgba(76, 175, 80, 0.5) 50%, 
+                rgba(76, 175, 80, 0.3) 70%, 
+                transparent 100%);
+            margin: 25px 0;
+            border: none;
+        }
+
+        @media (max-width: 768px) {
+            .ranking-section {
+                flex-direction: column;
+            }
+            
+            h1 {
+                font-size: 2.2rem;
+            }
+            
+            .panel, .ranking-panel {
+                min-width: 100%;
+            }
+            
+            .home-btn {
+                top: 10px;
+                left: 10px;
+                padding: 8px 12px;
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="spinner"></div>
+        <p>正在載入討論區數據...</p>
+    </div>
+
+    <div class="container">
+        <a href="index.html" class="home-btn"><i class="fas fa-arrow-left"></i> 返回首頁</a>
+
+        <header>
+            <h1><i class="fas fa-chart-bar"></i> 討論區數據分析</h1>
+            <p class="subtitle">基於討論區數據分析，探索熱門話題、熱門食物和參與時段分佈</p>
+        </header>
+
+        <div class="tabs">
+            <div class="tab active" data-tab="topics">熱門話題</div>
+            <div class="tab" data-tab="food">熱門食物</div>
+            <div class="tab" data-tab="time">時段分析</div>
+        </div>
+
+        <div class="tab-content active" id="topics-tab">
+            <div class="ranking-section">
+                <div class="ranking-panel popular-ranking">
+                    <h2><i class="fas fa-fire"></i> 熱門話題排行榜</h2>
+                    <ul class="ranking-list" id="topicsRankingList"></ul>
+                </div>
+
+                <div class="panel combined-panel">
+                    <h2><i class="fas fa-chart-pie"></i> 話題熱度分佈</h2>
+                    <div class="visualization-container">
+                        <div class="top-section">
+                            <div class="chart-container">
+                                <canvas id="topicsChart"></canvas>
+                            </div>
+                        </div>
+                        
+                        <hr class="section-divider">
+                        
+                        <div class="bottom-section">
+                            <h3><i class="fas fa-cloud"></i> 討論區關鍵字文字雲</h3>
+                            <div class="wordcloud-container">
+                                <canvas id="wordcloud"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="tab-content" id="food-tab">
+            <div class="ranking-section">
+                <div class="ranking-panel popular-ranking">
+                    <h2><i class="fas fa-utensils"></i> 熱門食物排行榜</h2>
+                    <ul class="ranking-list" id="foodRankingList"></ul>
+                </div>
+
+                <div class="panel">
+                    <h2><i class="fas fa-chart-pie"></i> 食物熱度分佈</h2>
+                    <div class="chart-container">
+                        <canvas id="foodChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="tab-content" id="time-tab">
+            <div class="ranking-section">
+                <div class="ranking-panel popular-ranking">
+                    <h2><i class="fas fa-clock"></i> 熱門時段排行榜</h2>
+                    <ul class="ranking-list" id="timeRankingList"></ul>
+                </div>
+
+                <div class="panel">
+                    <h2><i class="fas fa-chart-bar"></i> 時段活動熱度</h2>
+                    <div class="chart-container">
+                        <canvas id="timeChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="data-source">
+            <p>資料來源：全台各大討論區 • 資料時間：近期 • 分析文章數：<span id="sourcePosts">-</span>篇</p>
+        </div>
+    </div>
+
+    <div class="notification" id="notification">
+        <i class="fas fa-check-circle"></i> <span id="notificationText">操作成功</span>
+    </div>
+
+    <script>
+        let topicsChart = null;
+        let foodChart = null;
+        let timeChart = null;
+
+        function showNotification(message) {
+            const notification = document.getElementById('notification');
+            const textElement = document.getElementById('notificationText');
+
+            textElement.textContent = message;
+            notification.classList.add('show');
+
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+
+        function loadData() {
+            if (typeof foodTrends === 'undefined') {
+                document.getElementById('loadingOverlay').innerHTML = `
+                    <div style="text-align: center;">
+                        <i class="fas fa-exclamation-triangle fa-3x" style="color: #2e7d32; margin-bottom: 20px;"></i>
+                        <h2>數據載入失敗</h2>
+                        <p>無法載入討論區數據，請檢查 food_trends.js 文件是否存在</p>
+                        <button onclick="location.reload()" style="margin-top: 20px; padding: 10px 20px; background: #4caf50; border: none; border-radius: 5px; cursor: pointer; color: #fff;">重新載入</button>
+                    </div>
+                `;
+                return;
+            }
+
+            window.forumData = foodTrends;
+            initializePage();
+        }
+
+        function initializePage() {
+            renderRankings();
+            initCharts();
+            initTabs();
+            document.getElementById('sourcePosts').textContent = forumData.total_articles;
+            document.getElementById('loadingOverlay').style.display = 'none';
+            showNotification('討論區數據載入成功！');
+        }
+
+        function renderRankings() {
+            renderRankingList('topicsRankingList', forumData.cuisines, 'topics');
+            renderRankingList('foodRankingList', forumData.dishes, 'food');
+            renderRankingList('timeRankingList', forumData.locations, 'time');
+        }
+
+        function renderRankingList(elementId, data, type) {
+            const listElement = document.getElementById(elementId);
+            listElement.innerHTML = '';
+
+            if (data.length === 0) {
+                listElement.innerHTML = '<li class="ranking-item">暫無數據</li>';
+                return;
+            }
+
+            data.forEach((item, index) => {
+                const li = document.createElement('li');
+                li.className = 'ranking-item';
+
+                const rankNum = index + 1;
+                const rankClass = `rank ${rankNum <= 3 ? 'rank-' + rankNum : ''}`;
+
+                const details = getItemDetails(item.name, type);
+
+                li.innerHTML = `
+                    <div class="${rankClass}">${rankNum}</div>
+                    <div class="item-info">
+                        <div class="item-name">
+                            <div class="item-icon"><i class="fas ${details.icon}"></i></div>
+                            ${item.name}
+                        </div>
+                        <div class="item-tags">
+                            ${details.tags.map(tag => `<span class="tag">#${tag}</span>`).join('')}
+                        </div>
+                        <div class="item-details">
+                            ${details.description} <br>
+                            討論次數: ${item.count} | 參與用戶數: ${item.article_count}
+                        </div>
+                    </div>
+                `;
+
+                li.addEventListener('click', function () {
+                    this.classList.toggle('active');
+                });
+
+                listElement.appendChild(li);
+            });
+        }
+
+        function getItemDetails(name, type) {
+            const detailsMap = {
+                topics: {
+                    "科技": { tags: ["創新", "趨勢", "技術"], description: "科技相關話題包括最新技術、產品發布和行業趨勢討論。", icon: "fa-microchip" },
+                    "遊戲": { tags: ["電競", "攻略", "新作"], description: "遊戲討論涵蓋電競賽事、遊戲攻略和新作評測。", icon: "fa-gamepad" },
+                    "政治": { tags: ["時事", "政策", "國際"], description: "政治話題包含時事評論、政策分析和國際關係討論。", icon: "fa-landmark" },
+                    "娛樂": { tags: ["明星", "影視", "八卦"], description: "娛樂話題涵蓋影視作品、明星動態和娛樂新聞。", icon: "fa-film" },
+                    "生活": { tags: ["日常", "分享", "經驗"], description: "生活話題包括日常生活分享、經驗交流和實用資訊。", icon: "fa-home" },
+                    "運動": { tags: ["賽事", "球隊", "選手"], description: "運動話題涵蓋各項賽事、球隊動態和選手表現。", icon: "fa-futbol" },
+                    "投資": { tags: ["理財", "股票", "經濟"], description: "投資話題包括理財規劃、股市分析和經濟趨勢。", icon: "fa-chart-line" },
+                    "汽車": { tags: ["新車", "評測", "改裝"], description: "汽車話題涵蓋新車資訊、車款評測和改裝分享。", icon: "fa-car" },
+                    "美食": { tags: ["餐廳", "食譜", "分享"], description: "美食話題包括餐廳推薦、食譜分享和飲食文化。", icon: "fa-utensils" },
+                    "旅遊": { tags: ["景點", "攻略", "分享"], description: "旅遊話題涵蓋景點推薦、旅遊攻略和經驗分享。", icon: "fa-plane" }
+                },
+                food: {
+                    "珍珠奶茶": { tags: ["飲料", "台灣", "甜點"], description: "台灣最具代表性的飲料之一，在國內外都極受歡迎。", icon: "fa-glass-whiskey" },
+                    "雞排": { tags: ["炸物", "夜市", "小吃"], description: "台灣夜市代表性小吃，外酥內嫩的多汁口感深受喜愛。", icon: "fa-drumstick-bite" },
+                    "牛肉麵": { tags: ["麵食", "經典", "主食"], description: "台灣經典麵食，濃郁湯頭與軟嫩牛肉的完美結合。", icon: "fa-utensil-spoon" },
+                    "臭豆腐": { tags: ["發酵", "特色", "小吃"], description: "台灣特色小吃，獨特氣味與酥脆口感形成鮮明對比。", icon: "fa-cube" },
+                    "蚵仔煎": { tags: ["海鮮", "夜市", "傳統"], description: "台灣傳統小吃，新鮮蚵仔與蛋液、青菜的完美搭配。", icon: "fa-fish" },
+                    "滷肉飯": { tags: ["米飯", "經典", "主食"], description: "台灣經典主食，香氣四溢的滷肉與白飯的絕佳組合。", icon: "fa-bowl-rice" },
+                    "芒果冰": { tags: ["甜品", "夏季", "水果"], description: "台灣夏季代表性甜品，新鮮芒果與剉冰的清涼組合。", icon: "fa-ice-cream" },
+                    "鹽酥雞": { tags: ["炸物", "宵夜", "小吃"], description: "台灣熱門宵夜選擇，外皮酥脆、肉質多汁的炸雞塊。", icon: "fa-drumstick-bite" }
+                },
+                time: {
+                    "早上8-10點": { tags: ["通勤", "上班", "晨間"], description: "通勤時段，用戶在上班路上瀏覽討論區。", icon: "fa-sun" },
+                    "中午12-14點": { tags: ["午休", "放鬆", "午餐"], description: "午休時間，用戶利用休息時間參與討論。", icon: "fa-coffee" },
+                    "下午15-17點": { tags: ["工作", "間歇", "下午"], description: "工作間歇時段，用戶短暫休息瀏覽討論區。", icon: "fa-clock" },
+                    "晚上18-20點": { tags: ["下班", "放鬆", "晚間"], description: "下班後時段，用戶放鬆心情參與討論。", icon: "fa-moon" },
+                    "晚上21-23點": { tags: ["睡前", "深夜", "活躍"], description: "睡前時段，討論區最活躍的時間之一。", icon: "fa-bed" },
+                    "凌晨0-2點": { tags: ["夜貓", "深夜", "安靜"], description: "深夜時段，夜貓子用戶的專屬時間。", icon: "fa-star" },
+                    "週末白天": { tags: ["週末", "放鬆", "長時間"], description: "週末白天，用戶有較多時間參與深度討論。", icon: "fa-calendar-alt" },
+                    "週末晚上": { tags: ["週末", "聚會", "社交"], description: "週末晚上，用戶放鬆心情參與社交討論。", icon: "fa-glass-cheers" }
+                }
+            };
+
+            const defaultDetails = {
+                tags: ["熱門", "討論", "活躍"],
+                description: `${name}是討論區中廣受關注的項目，參與度很高。`,
+                icon: "fa-comment"
+            };
+
+            return detailsMap[type] && detailsMap[type][name] ? detailsMap[type][name] : defaultDetails;
+        }
+
+        function generateWordCloud() {
+            const canvas = document.getElementById('wordcloud');
+            const wordList = [];
+
+            forumData.cuisines.forEach(item => wordList.push([item.name, item.count]));
+            forumData.dishes.forEach(item => wordList.push([item.name, item.count]));
+            forumData.locations.forEach(item => wordList.push([item.name, item.count]));
+
+            const keywords = [
+                ["討論", 50], ["分享", 60], ["問題", 70], ["解答", 55],
+                ["資訊", 45], ["新聞", 65], ["觀點", 40], ["經驗", 35],
+                ["建議", 30], ["評測", 40], ["分析", 25], ["趨勢", 20]
+            ];
+
+            keywords.forEach(keyword => wordList.push(keyword));
+
+            WordCloud(canvas, {
+                list: wordList,
+                gridSize: 12,
+                weightFactor: 2,
+                fontFamily: 'Segoe UI, Microsoft JhengHei, sans-serif',
+                color: () => ['#2e7d32', '#4caf50', '#81c784', '#a5d6a7', '#c8e6c9'][Math.floor(Math.random() * 5)],
+                rotateRatio: 0.5,
+                rotationSteps: 2,
+                backgroundColor: 'transparent'
+            });
+        }
+
+        function generateTopicsChart() {
+            const ctx = document.getElementById('topicsChart').getContext('2d');
+            if (topicsChart) topicsChart.destroy();
+
+            topicsChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: forumData.cuisines.map(item => item.name),
+                    datasets: [{
+                        data: forumData.cuisines.map(item => item.count),
+                        backgroundColor: ['#2e7d32', '#4caf50', '#81c784', '#a5d6a7', '#c8e6c9', '#2e7d32', '#4caf50', '#81c784', '#a5d6a7', '#c8e6c9'],
+                        borderWidth: 1,
+                        borderColor: '#fff'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'right',
+                            labels: { boxWidth: 15, padding: 20, color: '#2e7d32' }
+                        }
+                    }
+                }
+            });
+        }
+
+        function generateFoodChart() {
+            const ctx = document.getElementById('foodChart').getContext('2d');
+            if (foodChart) foodChart.destroy();
+
+            foodChart = new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    labels: forumData.dishes.map(item => item.name),
+                    datasets: [{
+                        data: forumData.dishes.map(item => item.count),
+                        backgroundColor: ['#2e7d32', '#4caf50', '#81c784', '#a5d6a7', '#c8e6c9', '#2e7d32', '#4caf50', '#81c784'],
+                        borderWidth: 1,
+                        borderColor: '#fff'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'right',
+                            labels: { boxWidth: 15, padding: 20, color: '#2e7d32' }
+                        }
+                    }
+                }
+            });
+        }
+
+        function generateTimeChart() {
+            const ctx = document.getElementById('timeChart').getContext('2d');
+            if (timeChart) timeChart.destroy();
+
+            timeChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: forumData.locations.map(item => item.name),
+                    datasets: [{
+                        label: '活躍度',
+                        data: forumData.locations.map(item => item.count),
+                        backgroundColor: 'rgba(129, 199, 132, 0.7)',
+                        borderColor: '#4caf50',
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'top', labels: { color: '#2e7d32' } }
+                    },
+                    scales: {
+                        x: { ticks: { color: '#2e7d32' }, grid: { color: 'rgba(46, 125, 50, 0.1)' } },
+                        y: { ticks: { color: '#2e7d32' }, grid: { color: 'rgba(46, 125, 50, 0.1)' } }
+                    }
+                }
+            });
+        }
+
+        function initCharts() {
+            generateTopicsChart();
+            generateFoodChart();
+            generateTimeChart();
+            generateWordCloud();
+        }
+
+        function initTabs() {
+            const tabs = document.querySelectorAll('.tab');
+            const tabContents = document.querySelectorAll('.tab-content');
+
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    tabs.forEach(t => t.classList.remove('active'));
+                    tabContents.forEach(c => c.classList.remove('active'));
+                    
+                    tab.classList.add('active');
+                    const tabId = tab.getAttribute('data-tab') + '-tab';
+                    document.getElementById(tabId).classList.add('active');
+                });
+            });
+        }
+
+        window.addEventListener('DOMContentLoaded', loadData);
+    </script>
+</body>
+</html>
